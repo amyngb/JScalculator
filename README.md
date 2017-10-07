@@ -1,0 +1,2 @@
+# JScalculator
+Handy calculator app!
