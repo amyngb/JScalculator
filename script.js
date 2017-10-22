@@ -2,32 +2,85 @@
 $(document).ready(function (){
     
     var curr = '';
-    var prevs = [];
-    var oper = '';
-    var decimal = '';
+    var prev = '';
+    var result = '';
+    var operation = '';
     
-    reset();
+    //reset();
 
     function reset () {
         $("#screen-num").html("0");
+        $("#screen-text").html("0");
+    }
+
+    function limitReached () {
+        $("#screen-text").html("Digit Limit Reached");
     }
 
     function displayCurr(curr){
         //read screen
         var temp = $("#screen-num").html();
-    
-        if (temp == 0) {
+        
+        if (temp === "0" || temp == null) {
+            //display screen
             $("#screen-num").html(curr);
+            $("#screen-text").html(curr);
         }
 
         else if (temp > 0 && temp.length < 7) {
-            temp = temp.concat(curr);
-            $("#screen-num").html(temp);
+
+            //if temp and curr are both numbers
+            if (curr != "+" && curr != "-" && curr != "/" && curr != "x" && temp != "+" && temp != "-" && temp != "/" && temp != "x") {
+                //display screen
+                temp = temp.concat(curr);
+                $("#screen-num").html(temp);
+                $("#screen-text").html(temp);
+            }
+
+            //if current key pressed is an operation
+            else if (curr == "+" || curr == "-" || curr == "x" || curr == "/") {
+                //display screen
+                $("#screen-num").html(curr);
+                temp = temp.concat(curr);
+                $("#screen-text").html(temp);  
+
+            } 
         }
+
+            //if previous key pressed was an operation
+        else if (temp == "+" || temp == "-" || temp == "/" || temp == "x") {
+            var num1 = $("#screen-text").html();
+            num1 = num1.split(""); 
+            num1.pop();
+            num1 = num1.join("");
+            console.log(num1);
+            //add
+            if (temp == "+") {
+                result = num1 + curr;
+                $("#screen-num").html(result);
+            }
+            //subtract
+            else if (temp == "+") {
+                
+            }
+            //multiply
+            else if (temp == "+") {
+                
+            }
+            //divide 
+            else if (temp == "/") {
+
+            }
+                
+        }
+    
+
         else {
-            //say the digit limit has been reached, reset();
+            limitReached();
+            reset();
         }
     }
+
 
     //****** Set up event listeners *******//
 
@@ -103,6 +156,32 @@ $(document).ready(function (){
     $("#AC").click(function(){
             reset();
     }); 
+
+    //+
+    $("#plus").click(function(){
+        curr = "+";
+        displayCurr(curr);
+    });
+
+    //-
+    $("#minus").click(function(){
+        curr = "-";
+        displayCurr(curr);
+    });
+
+    //%
+    $("#divide").click(function(){
+        curr = "/";
+        displayCurr(curr);
+    });
+
+    //.
+    $("#decimal").click(function(){
+        curr = ".";
+        displayCurr(curr);
+    });
+
+
         
         
     
