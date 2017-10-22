@@ -1,85 +1,103 @@
 //Calculate//
-$(document).ready(function (){
-    
-    var curr = '';
-    var prev = '';
+$(document).ready(function ()
+{
+    var temp = '';  //what's displayed in #screen-num (current operation)
+    var curr = '';  //current key pressed (to be displayed)
+    var hist = '';  //what's displayed in #screen-text (past operations)
     var result = '';
-    var operation = '';
     
-    //reset();
-
-    function reset () {
+    function resetScreen () 
+    {
         $("#screen-num").html("0");
         $("#screen-text").html("0");
     }
 
-    function limitReached () {
-        $("#screen-text").html("Digit Limit Reached");
+    function limitReached () 
+    {
+        $("p").html("Digit Limit Reached");
+        $("#screen-num").html("0");        
     }
 
-    function displayCurr(curr){
-        //read screen
-        var temp = $("#screen-num").html();
+    function displayNum (num) 
+    {
+        $("#screen-num").html(num);
+    }
+
+    function displayText (text) 
+    {
+        $("#screen-text").html(text);
+    }
+
+    function calculate (curr)
+    {
+        //first time
+        if ($("#screen-num").html() === "0" && !isNaN(curr)) 
+        {
+            displayNum(curr);
+            displayText(curr);
+            return;
+        }
+
+        //define terms
+        temp = $("#screen-num").html();
+        hist = $("#screen-text").html();
+
+        //as long as '=' isn't pressed
+        if (curr != '=') 
+        {
+            //if screen displays a number
+            if (!isNaN(temp) && temp != 0) {
+                if (temp.length < 7) 
+                {   
+                    console.log(temp);               
+                    //if curr key is a number
+                    if (!isNaN(curr)) 
+                    {
+                        temp = temp.concat(curr);                     
+                        displayNum(temp);
+                        hist = hist.concat(curr);
+                        displayText(hist);   
+                    }
+
+                    //if curr is an operation
+                    else 
+                    {
+                        hist = hist.concat(curr);                     
+                        displayNum(curr);
+                        displayText(hist);     
+                    }
+                }
+                //if display is too long
+                else 
+                {
+                    limitReached(); 
+                    return;               
+                }
+            }
+
+            //if screen displays an operation and curr is a number
+            if (isNaN(temp) && !isNaN(curr)) 
+            {
+                hist = hist.concat(curr);                           
+                displayNum(curr);
+                displayText(hist);
+
+            }
+        }
+        //when '=' is pressed
+        else 
+        {
+            result = eval(hist);
+            displayNum(result);
+            hist = hist.concat("=" + result);
+            displayText(hist);
+        }
+
         
-        if (temp === "0" || temp == null) {
-            //display screen
-            $("#screen-num").html(curr);
-            $("#screen-text").html(curr);
-        }
 
-        else if (temp > 0 && temp.length < 7) {
-
-            //if temp and curr are both numbers
-            if (curr != "+" && curr != "-" && curr != "/" && curr != "x" && temp != "+" && temp != "-" && temp != "/" && temp != "x") {
-                //display screen
-                temp = temp.concat(curr);
-                $("#screen-num").html(temp);
-                $("#screen-text").html(temp);
-            }
-
-            //if current key pressed is an operation
-            else if (curr == "+" || curr == "-" || curr == "x" || curr == "/") {
-                //display screen
-                $("#screen-num").html(curr);
-                temp = temp.concat(curr);
-                $("#screen-text").html(temp);  
-
-            } 
-        }
-
-            //if previous key pressed was an operation
-        else if (temp == "+" || temp == "-" || temp == "/" || temp == "x") {
-            var num1 = $("#screen-text").html();
-            num1 = num1.split(""); 
-            num1.pop();
-            num1 = num1.join("");
-            console.log(num1);
-            //add
-            if (temp == "+") {
-                result = num1 + curr;
-                $("#screen-num").html(result);
-            }
-            //subtract
-            else if (temp == "+") {
-                
-            }
-            //multiply
-            else if (temp == "+") {
-                
-            }
-            //divide 
-            else if (temp == "/") {
-
-            }
-                
-        }
-    
-
-        else {
-            limitReached();
-            reset();
-        }
-    }
+    }    
+        
+       
 
 
     //****** Set up event listeners *******//
@@ -87,106 +105,117 @@ $(document).ready(function (){
     //0 
     $("#k0").click(function(){
         curr = "0";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //1
     $("#k1").click(function(){
         curr = "1";
         console.log(curr);
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //2
     $("#k2").click(function(){
         curr = "2";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //3
     $("#k3").click(function(){
         curr = "3";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //4
     $("#k4").click(function(){
         curr = "4";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //5
     $("#k5").click(function(){
         curr = "5";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //6
     $("#k6").click(function(){
         curr = "6";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //7
     $("#k7").click(function(){
         curr = "7";
-        displayCurr(curr);
+        calculate(curr);
 
     });
 
     //8
     $("#k8").click(function(){
         curr = "8";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //9
     $("#k9").click(function(){
         curr = "9";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //CE
     $("#CE").click(function(){
         curr = "0";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //AC
     $("#AC").click(function(){
-            reset();
+        resetScreen();
     }); 
 
     //+
     $("#plus").click(function(){
         curr = "+";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //-
     $("#minus").click(function(){
         curr = "-";
-        displayCurr(curr);
+        calculate(curr);
     });
 
     //%
     $("#divide").click(function(){
         curr = "/";
-        displayCurr(curr);
+        calculate(curr);
+    });
+
+    //x
+    $("#times").click(function(){
+        curr = "x";
+        calculate(curr);
     });
 
     //.
     $("#decimal").click(function(){
         curr = ".";
-        displayCurr(curr);
+        calculate(curr);
     });
 
-
-        
-        
-    
+    //=
+    $("#equals").click(function(){
+        curr = "="
+        calculate(curr);
+    }); 
 
 });
+
+//todo
+//fix CE
+//decimal function
 
 
 
