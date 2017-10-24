@@ -6,6 +6,11 @@ $(document).ready(function ()
     var hist = '';  //what's displayed in #screen-text (past operations)
     var result = '';  //answer when '=' is pressed
     var l = '';  //length of hist
+
+    var histAfterCE = '';
+    var tempAfterCE = '';
+    var lastChar = ''; //last char of histAfterCE
+    var fixCE = '';
     
     function resetScreen () 
     {
@@ -22,18 +27,25 @@ $(document).ready(function ()
     function displayNum (num) 
     {
         $("#screen-num").html(num);
+        
     }
 
     function displayText (text) 
     {
         $("#screen-text").html(text);
+        
     }
+
+    
 
     function calculate (curr)
     {
         //define terms
         temp = $("#screen-num").html();
         hist = $("#screen-text").html();        
+        l = hist.length;
+        lastChar =  hist.charAt(l-1);
+        console.log("curr = " + curr, "temp = " + temp, "hist = " + hist);
 
         //reset after calculating a result
         if (hist.indexOf('=') != -1) {
@@ -43,10 +55,13 @@ $(document).ready(function ()
 
         if (curr != "CE") 
         {
+            console.log("access1");
             
             //first time
-            if (temp === "0" && !isNaN(curr && hist == "")) 
+            if ( (temp === "0" && !isNaN(curr) && (hist == "" || hist == "0") ) )
             {
+                console.log("access3");
+                
                 displayNum(curr);
                 displayText(curr);
                 return;
@@ -55,11 +70,14 @@ $(document).ready(function ()
             //as long as '=' isn't pressed
             if (curr != '=') 
             {
+                console.log("access2");
+                
+                
                 //if screen displays a number
-                if (!isNaN(temp) && temp != 0) {
+                if (!isNaN(temp) && temp != 0) 
+                {
                     if (temp.length < 7) 
                     {   
-                        console.log(temp);               
                         //if curr key is a number
                         if (!isNaN(curr)) 
                         {
@@ -70,7 +88,7 @@ $(document).ready(function ()
                         }
 
                         //if curr is an operation
-                        else if (isNaN(curr) || isNaN(hist.charAt(l-1)))
+                        else if (isNaN(curr))
                         {
                             hist = hist.concat(curr);                     
                             displayNum(curr);
@@ -85,10 +103,10 @@ $(document).ready(function ()
                     }
                 }
 
-                //if screen displays an operation and curr is a number
-                if (isNaN(temp) && !isNaN(curr)) 
+                //if screen displays an operation and curr is a number  (and handle case after CE is pressed)
+                if ( (isNaN(temp) && !isNaN(curr)) || (tempAfterCE == "0" && isNaN(lastChar) ) )
                 {
-                    hist = hist.concat(curr);                           
+                    hist = hist.concat(curr);       
                     displayNum(curr);
                     displayText(hist);
 
@@ -103,17 +121,28 @@ $(document).ready(function ()
                 hist = hist.concat("=" + result);
                 displayText(hist);      
             }
-        }    
+        }   
+
         // handle case if CE was pushed
         else 
         {
-            //remove from screen-text, keep functionality
-            var n = hist.search(temp);
-            console.log(temp, hist, n);
-            hist = hist.slice(0, n);
-            l = hist.length;
+                       
+            //find temp in hist 
+            var n = hist.search(temp);            
+
+           //prevent multiple CE presses
+           if (n != -1) {
+
+               //remove temp from display
+                hist = hist.slice(0, n); 
+           }
 
             displayText(hist);
+
+            //allow next number to be input
+            histAfterCE = $("#screen-text").html();  
+            tempAfterCE = 0;   
+            lastChar =  histAfterCE[histAfterCE.length - 1];   
             displayNum('0');
             
         }
@@ -130,7 +159,6 @@ $(document).ready(function ()
     //1
     $("#k1").click(function(){
         curr = "1";
-        console.log(curr);
         calculate(curr);
     });
 
