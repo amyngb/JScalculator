@@ -7,10 +7,10 @@ $(document).ready(function ()
     var result = '';  //answer when '=' is pressed
     var l = '';  //length of hist
 
-    var histAfterCE = '';
-    var tempAfterCE = '';
+    var histAfterCE = '';  //to help functionality after CE is pressed
+    var tempAfterCE = '';  //to help functionality after CE is pressed
     var lastChar = ''; //last char of histAfterCE
-    var fixCE = '';
+    
     
     function resetScreen () 
     {
@@ -35,8 +35,18 @@ $(document).ready(function ()
         $("#screen-text").html(text);
         
     }
+    //if there is only one decimal point, return true
+    function findDecimal (str) {
+        var count = str.match(/\./g);
+        console.log(count.length);
+        if (count.length != 1) {
+            return false;
+        }
+        return true;     
+    }
+   
 
-    
+//******* Calculate function ***********//
 
     function calculate (curr)
     {
@@ -45,9 +55,7 @@ $(document).ready(function ()
         hist = $("#screen-text").html();        
         l = hist.length;
         lastChar =  hist.charAt(l-1);
-        //console.log(isNaN(.3));
-        //console.log("curr = " + curr, "temp = " + temp, "hist = " + hist);
-
+       
         //reset after calculating a result
         if (hist.indexOf('=') != -1) {
             temp = '0';
@@ -74,17 +82,35 @@ $(document).ready(function ()
                 {
                     if (temp.length < 7) 
                     {   
-                        //if curr key is a number or decimal
-                        if (!isNaN(curr) || curr == ".") 
+                        //if curr key is a number               
+                        if ( (!isNaN(curr) || curr == ".")  )  
                         {
                             temp = temp.concat(curr);                     
                             displayNum(temp);
                             hist = hist.concat(curr);
                             displayText(hist);   
                         }
+                      
+                        //if curr key is a decimal
+                        if (curr === ".") 
+                          console.log(hist);
+                        {
+                            //if there is only one decimal
+                          if (findDecimal(hist)) 
+                          {
+                            temp = temp.concat(curr);                     
+                            displayNum(temp);
+                            hist = hist.concat(curr);
+                            displayText(hist); 
+                          }
+                          else 
+                          {
+                            //handle other case
+                          }
+                        }
 
                         //if curr is an operation
-                        else if (isNaN(curr) && curr != ".")
+                        if (isNaN(curr) && curr != ".")
                         {
                             hist = hist.concat(curr);                     
                             displayNum(curr);
@@ -99,8 +125,8 @@ $(document).ready(function ()
                     }
                 }
 
-                //if screen displays an operation and curr is a number  (and handle case after CE is pressed)
-                if ( (isNaN(temp) && !isNaN(curr)) || (tempAfterCE == "0" && isNaN(lastChar) ) )
+                //if screen displays an operation and curr is a number  (|| handle case after CE is pressed)
+                if ( (isNaN(temp) && !isNaN(curr) && curr != ".") || (tempAfterCE == "0" && isNaN(lastChar) ) )
                 {
                     hist = hist.concat(curr);       
                     displayNum(curr);
@@ -112,45 +138,57 @@ $(document).ready(function ()
             //when '=' is pressed (yay!)
             else 
             {
-                result = eval(hist);
-                result = result.toString();
+                hist = $("#screen-text").html();
 
-                //round infinitely repeating decimals and drop trailing zeros
-                if (result.indexOf('.') != -1) 
-                {
-                    var decIndex = result.indexOf(".");
-                    result = eval(result);
+                //so that = can't be pressed twice
+                if (hist.indexOf("=") == -1) {
 
-                    result = result.toFixed(7-decIndex); 
-                    result = result.split("");
+                    result = eval(hist);
+                    result = result.toString();
+                    console.log(hist);
 
-                    //drop trailing zeros
-                    for (var i = result.length - 1; i >= 1; i--) {
-                        if (result[i] == "0") {
-                            result.pop(i);                            
+                    //round infinitely repeating decimals and drop trailing zeros
+                    if (result.indexOf('.') != -1) 
+                    {
+                        var decIndex = result.indexOf(".");
+                        result = eval(result);
+
+                        result = result.toFixed(7-decIndex); 
+                        result = result.split("");
+
+                        //drop trailing zeros
+                        for (var i = result.length - 1; i >= 1; i--) {
+                            if (result[i] == "0") {
+                                result.pop(i);                            
+                            }
                         }
+
+                        result = result.join("");     
                     }
 
-                    result = result.join("");     
-                }
+                    //handle too long numbers that aren't decimals
+                    if (result.length > 7 && result.indexOf('.') == -1) 
+                    {
+                        limitReached();
+                        return;
+                    }
 
-                //handle too long numbers that aren't decimals
-                if (result.length > 7 && result.indexOf('.') == -1) 
-                {
-                    limitReached();
-                    return;
-                }
-
-                displayNum(result);
-                hist = hist.concat("=" + result);
-                displayText(hist);      
+                    displayNum(result);
+                    hist = hist.concat("=" + result);
+                    displayText(hist);     
+                } 
             }
         }   
 
         // handle case if CE was pushed
         else 
         {
-                       
+            //case to fix UI when toggling btw AC and CE 
+            if ($("#screen-num").html() == "0" && $("#screen-text").html() == "0") {
+              displayNum(0);
+              displayText(0);
+              return;
+            }
             //find temp in hist 
             var n = hist.search(temp);            
 
@@ -285,18 +323,15 @@ $(document).ready(function ()
 
 });
 
-//todo
-
-//3+0= =?
-//fix mobile view (why so small??)
 
 
-//done
+//fixed issues
 //fix CE
     //change display (text and num)
     //keep functionality
 //fractions that never end 1/3 = .33333333333 etc.
 //decimal function
+//3+0= =?
 
 
 

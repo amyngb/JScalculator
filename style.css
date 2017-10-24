@@ -20,8 +20,8 @@ body, container {
 #title {
     display: flex;
     align-self: center;
-    padding: 20px 20px 0 20px;
-    font-size: 2em;
+    padding: 1em 1em 0 1em;
+    font-size: 1.8em;
     color: #cc6600;
 }
 
@@ -33,18 +33,18 @@ body, container {
     align-self: center;
 
     height: 80px;
-    width: 82%;
+    width: 75%;
     border: 2px solid #666666;
     padding: 10px;
-    margin: 25px;
+    margin: 1.5em 0;
     
     border-radius: 8%;
-    background-color:   #EAECEE;
+    background-color: #EAECEE;
     
 }
 
 #screen-num {
-    font-size: 4em;
+    font-size: 3em;
     margin: 0px 0px -4px 0px;
     /* padding: -3px 0 0 0; */
 }
@@ -59,12 +59,11 @@ body, container {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 450px;
     height: 100%;
 }
 
 .key {
-    font-size: 3em;
+    font-size: 2em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -93,18 +92,18 @@ key:active {
 }
 
 .calc-col {
-    width: 105px;
-    height: 350px;
+    width: 5em;
+    height: 16em;
     display: flex;
     flex-direction: column;
     /* justify-content: baseline; */
 }
 
 #k0 {
-  width: 200px;
+  width: 4.7em;
 }
 
 /*how would i use flexbox to make this twice the height?  */
 #equals {  
-    height: 116px;
+    height: 2.55em;
 }
