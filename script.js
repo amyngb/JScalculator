@@ -45,7 +45,8 @@ $(document).ready(function ()
         hist = $("#screen-text").html();        
         l = hist.length;
         lastChar =  hist.charAt(l-1);
-        console.log("curr = " + curr, "temp = " + temp, "hist = " + hist);
+        //console.log(isNaN(.3));
+        //console.log("curr = " + curr, "temp = " + temp, "hist = " + hist);
 
         //reset after calculating a result
         if (hist.indexOf('=') != -1) {
@@ -55,12 +56,10 @@ $(document).ready(function ()
 
         if (curr != "CE") 
         {
-            console.log("access1");
             
             //first time
             if ( (temp === "0" && !isNaN(curr) && (hist == "" || hist == "0") ) )
             {
-                console.log("access3");
                 
                 displayNum(curr);
                 displayText(curr);
@@ -69,17 +68,14 @@ $(document).ready(function ()
 
             //as long as '=' isn't pressed
             if (curr != '=') 
-            {
-                console.log("access2");
-                
-                
+            {     
                 //if screen displays a number
                 if (!isNaN(temp) && temp != 0) 
                 {
                     if (temp.length < 7) 
                     {   
-                        //if curr key is a number
-                        if (!isNaN(curr)) 
+                        //if curr key is a number or decimal
+                        if (!isNaN(curr) || curr == ".") 
                         {
                             temp = temp.concat(curr);                     
                             displayNum(temp);
@@ -88,7 +84,7 @@ $(document).ready(function ()
                         }
 
                         //if curr is an operation
-                        else if (isNaN(curr))
+                        else if (isNaN(curr) && curr != ".")
                         {
                             hist = hist.concat(curr);                     
                             displayNum(curr);
@@ -117,6 +113,34 @@ $(document).ready(function ()
             else 
             {
                 result = eval(hist);
+                result = result.toString();
+
+                //round infinitely repeating decimals and drop trailing zeros
+                if (result.indexOf('.') != -1) 
+                {
+                    var decIndex = result.indexOf(".");
+                    result = eval(result);
+
+                    result = result.toFixed(7-decIndex); 
+                    result = result.split("");
+
+                    //drop trailing zeros
+                    for (var i = result.length - 1; i >= 1; i--) {
+                        if (result[i] == "0") {
+                            result.pop(i);                            
+                        }
+                    }
+
+                    result = result.join("");     
+                }
+
+                //handle too long numbers that aren't decimals
+                if (result.length > 7 && result.indexOf('.') == -1) 
+                {
+                    limitReached();
+                    return;
+                }
+
                 displayNum(result);
                 hist = hist.concat("=" + result);
                 displayText(hist);      
@@ -139,7 +163,7 @@ $(document).ready(function ()
 
             displayText(hist);
 
-            //allow next number to be input
+            //define terms to allow next number to be input
             histAfterCE = $("#screen-text").html();  
             tempAfterCE = 0;   
             lastChar =  histAfterCE[histAfterCE.length - 1];   
@@ -262,13 +286,18 @@ $(document).ready(function ()
 });
 
 //todo
+
+//3+0= =?
+//fix mobile view (why so small??)
+
+
+//done
 //fix CE
     //change display (text and num)
     //keep functionality
-//decimal function
-//3+0= =?
-//fix mobile view (why so small??)
 //fractions that never end 1/3 = .33333333333 etc.
+//decimal function
+
 
 
 
