@@ -4,7 +4,8 @@ $(document).ready(function ()
     var temp = '';  //what's displayed in #screen-num (current operation)
     var curr = '';  //current key pressed (to be displayed)
     var hist = '';  //what's displayed in #screen-text (past operations)
-    var result = '';
+    var result = '';  //answer when '=' is pressed
+    var l = '';  //length of hist
     
     function resetScreen () 
     {
@@ -30,75 +31,93 @@ $(document).ready(function ()
 
     function calculate (curr)
     {
-        //first time
-        if ($("#screen-num").html() === "0" && !isNaN(curr)) 
-        {
-            displayNum(curr);
-            displayText(curr);
-            return;
-        }
-
         //define terms
         temp = $("#screen-num").html();
-        hist = $("#screen-text").html();
+        hist = $("#screen-text").html();        
 
-        //as long as '=' isn't pressed
-        if (curr != '=') 
+        //reset after calculating a result
+        if (hist.indexOf('=') != -1) {
+            temp = '0';
+            hist = '';
+        }
+
+        if (curr != "CE") 
         {
-            //if screen displays a number
-            if (!isNaN(temp) && temp != 0) {
-                if (temp.length < 7) 
-                {   
-                    console.log(temp);               
-                    //if curr key is a number
-                    if (!isNaN(curr)) 
-                    {
-                        temp = temp.concat(curr);                     
-                        displayNum(temp);
-                        hist = hist.concat(curr);
-                        displayText(hist);   
-                    }
+            
+            //first time
+            if (temp === "0" && !isNaN(curr && hist == "")) 
+            {
+                displayNum(curr);
+                displayText(curr);
+                return;
+            }
 
-                    //if curr is an operation
+            //as long as '=' isn't pressed
+            if (curr != '=') 
+            {
+                //if screen displays a number
+                if (!isNaN(temp) && temp != 0) {
+                    if (temp.length < 7) 
+                    {   
+                        console.log(temp);               
+                        //if curr key is a number
+                        if (!isNaN(curr)) 
+                        {
+                            temp = temp.concat(curr);                     
+                            displayNum(temp);
+                            hist = hist.concat(curr);
+                            displayText(hist);   
+                        }
+
+                        //if curr is an operation
+                        else if (isNaN(curr) || isNaN(hist.charAt(l-1)))
+                        {
+                            hist = hist.concat(curr);                     
+                            displayNum(curr);
+                            displayText(hist);     
+                        }
+                    }
+                    //if display is too long
                     else 
                     {
-                        hist = hist.concat(curr);                     
-                        displayNum(curr);
-                        displayText(hist);     
+                        limitReached(); 
+                        return;               
                     }
                 }
-                //if display is too long
-                else 
+
+                //if screen displays an operation and curr is a number
+                if (isNaN(temp) && !isNaN(curr)) 
                 {
-                    limitReached(); 
-                    return;               
+                    hist = hist.concat(curr);                           
+                    displayNum(curr);
+                    displayText(hist);
+
                 }
             }
 
-            //if screen displays an operation and curr is a number
-            if (isNaN(temp) && !isNaN(curr)) 
+            //when '=' is pressed (yay!)
+            else 
             {
-                hist = hist.concat(curr);                           
-                displayNum(curr);
-                displayText(hist);
-
+                result = eval(hist);
+                displayNum(result);
+                hist = hist.concat("=" + result);
+                displayText(hist);      
             }
-        }
-        //when '=' is pressed
+        }    
+        // handle case if CE was pushed
         else 
         {
-            result = eval(hist);
-            displayNum(result);
-            hist = hist.concat("=" + result);
+            //remove from screen-text, keep functionality
+            var n = hist.search(temp);
+            console.log(temp, hist, n);
+            hist = hist.slice(0, n);
+            l = hist.length;
+
             displayText(hist);
+            displayNum('0');
+            
         }
-
-        
-
     }    
-        
-       
-
 
     //****** Set up event listeners *******//
 
@@ -166,8 +185,9 @@ $(document).ready(function ()
 
     //CE
     $("#CE").click(function(){
-        curr = "0";
+        curr="CE";
         calculate(curr);
+        
     });
 
     //AC
@@ -195,7 +215,7 @@ $(document).ready(function ()
 
     //x
     $("#times").click(function(){
-        curr = "x";
+        curr = "*";
         calculate(curr);
     });
 
@@ -215,7 +235,12 @@ $(document).ready(function ()
 
 //todo
 //fix CE
+    //change display (text and num)
+    //keep functionality
 //decimal function
+//3+0= =?
+//fix mobile view (why so small??)
+//fractions that never end 1/3 = .33333333333 etc.
 
 
 
