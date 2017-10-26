@@ -11,11 +11,17 @@ $(document).ready(function ()
     var tempAfterCE = '';  //to help functionality after CE is pressed
     var lastChar = ''; //last char of histAfterCE
     
-    
     function resetScreen () 
     {
         $("#screen-num").html("0");
         $("#screen-text").html("0");
+    }
+
+    function checkLimit (widthNum, widthText) {
+        if (  (widthNum > 230) || (widthText > 240 ) ) {
+            return true;
+        }
+        return false;
     }
 
     function limitReached () 
@@ -38,8 +44,8 @@ $(document).ready(function ()
     //if there is only one decimal point, return true
     function findDecimal (str) {
         var count = str.match(/\./g);
-        console.log(count.length);
-        if (count.length != 1) {
+        console.log(count);
+        if (count === null || count.length != 1) {
             return false;
         }
         return true;     
@@ -49,7 +55,12 @@ $(document).ready(function ()
 //******* Calculate function ***********//
 
     function calculate (curr)
-    {
+    {   
+        //check for UI overflow
+        var widthNum = $("#screen-num").width();
+        var widthText = $('#screen-text').width();
+        
+
         //define terms
         temp = $("#screen-num").html();
         hist = $("#screen-text").html();        
@@ -79,49 +90,42 @@ $(document).ready(function ()
             {     
                 //if screen displays a number
                 if (!isNaN(temp) && temp != 0) 
-                {
-                    if (temp.length < 7) 
-                    {   
-                        //if curr key is a number               
-                        if ( (!isNaN(curr) || curr == ".")  )  
-                        {
-                            temp = temp.concat(curr);                     
-                            displayNum(temp);
-                            hist = hist.concat(curr);
-                            displayText(hist);   
+                {                      
+                    //if curr key is a number               
+                    if ( !isNaN(curr)  )  
+                    {
+                        if (checkLimit(widthNum, widthText)) {
+                            return limitReached();
                         }
-                      
-                        //if curr key is a decimal
-                        if (curr === ".") 
-                          console.log(hist);
-                        {
-                            //if there is only one decimal
-                          if (findDecimal(hist)) 
-                          {
-                            temp = temp.concat(curr);                     
-                            displayNum(temp);
-                            hist = hist.concat(curr);
-                            displayText(hist); 
-                          }
-                          else 
-                          {
-                            //handle other case
-                          }
+                        temp = temp.concat(curr);                     
+                        displayNum(temp);
+                        hist = hist.concat(curr);
+                        displayText(hist);   
+                    }
+                    
+                    //if curr key is a decimal
+                    if (curr === ".") 
+                    {
+                        if (checkLimit(widthNum, widthText)) {
+                            return limitReached();
                         }
-
-                        //if curr is an operation
-                        if (isNaN(curr) && curr != ".")
+                        console.log(temp);                            
+                        //if there is only one decimal
+                        if (!findDecimal(temp)) 
                         {
-                            hist = hist.concat(curr);                     
-                            displayNum(curr);
-                            displayText(hist);     
+                        temp = temp.concat(curr);                     
+                        displayNum(temp);
+                        hist = hist.concat(curr);
+                        displayText(hist); 
                         }
                     }
-                    //if display is too long
-                    else 
+
+                    //if curr key is an operation
+                    if (isNaN(curr) && curr != ".")
                     {
-                        limitReached(); 
-                        return;               
+                        hist = hist.concat(curr);                     
+                        displayNum(curr);
+                        displayText(hist);     
                     }
                 }
 
