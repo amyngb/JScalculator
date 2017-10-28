@@ -111,3 +111,8 @@ key:active {
 #equals {  
     height: 2.55em;
 }
+
+#special {
+    height: 1.2em;
+    visibility: hidden;
+  }

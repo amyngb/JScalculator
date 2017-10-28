@@ -10,6 +10,8 @@ $(document).ready(function ()
     var histAfterCE = '';  //to help functionality after CE is pressed
     var tempAfterCE = '';  //to help functionality after CE is pressed
     var lastChar = ''; //last char of histAfterCE
+    var widthNum = '';
+    var widthText = '';
     
     function resetScreen () 
     {
@@ -57,8 +59,8 @@ $(document).ready(function ()
     function calculate (curr)
     {   
         //check for UI overflow
-        var widthNum = $("#screen-num").width();
-        var widthText = $('#screen-text').width();
+        widthNum = $("#screen-num").width();
+        widthText = $('#screen-text').width();
         
 
         //define terms
@@ -197,8 +199,8 @@ $(document).ready(function ()
             var n = hist.search(temp);            
 
            //prevent multiple CE presses
-           if (n != -1) {
-
+           if (n != -1) 
+           {
                //remove temp from display
                 hist = hist.slice(0, n); 
            }
