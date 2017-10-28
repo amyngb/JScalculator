@@ -67,6 +67,7 @@ body, container {
 }
 
 .key {
+    z-index: 1;
     font-size: 2em;
     display: flex;
     justify-content: center;
@@ -113,6 +114,7 @@ key:active {
 }
 
 #special {
+    z-index: -1;
     height: 1.2em;
     visibility: hidden;
   }
