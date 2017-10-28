@@ -1,6 +1,3 @@
-
-
-
 body, container {
     display: flex;
     justify-content: center;
@@ -70,6 +67,7 @@ body, container {
     z-index: 1;
     font-size: 2em;
     display: flex;
+    flex-grow: 1;
     justify-content: center;
     align-items: center;
     /* flex-grow: 1; */
@@ -98,7 +96,7 @@ key:active {
 
 .calc-col {
     width: 5em;
-    height: 16em;
+    height: 18em;
     display: flex;
     flex-direction: column;
     /* justify-content: baseline; */
@@ -110,11 +108,11 @@ key:active {
 
 /*how would i use flexbox to make this twice the height?  */
 #equals {  
-    height: 2.55em;
+    height: 2.95em;
 }
 
 #special {
-    z-index: -1;
-    height: 1.2em;
-    visibility: hidden;
-  }
+  z-index: -1;
+  height: 1.1em;
+  visibility: hidden;
+}

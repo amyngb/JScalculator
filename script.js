@@ -10,8 +10,8 @@ $(document).ready(function ()
     var histAfterCE = '';  //to help functionality after CE is pressed
     var tempAfterCE = '';  //to help functionality after CE is pressed
     var lastChar = ''; //last char of histAfterCE
-    var widthNum = '';
-    var widthText = '';
+    var widthNum = '';  //UI control
+    var widthText = '';  //UI control
     
     function resetScreen () 
     {
@@ -20,7 +20,7 @@ $(document).ready(function ()
     }
 
     function checkLimit (widthNum, widthText) {
-        if (  (widthNum > 230) || (widthText > 240 ) ) {
+        if (  (widthNum > 235) || (widthText > 240 ) ) {
             return true;
         }
         return false;
@@ -46,7 +46,7 @@ $(document).ready(function ()
     //if there is only one decimal point, return true
     function findDecimal (str) {
         var count = str.match(/\./g);
-        console.log(count);
+        console.log("decimal count =" + count);
         if (count === null || count.length != 1) {
             return false;
         }
@@ -68,6 +68,8 @@ $(document).ready(function ()
         hist = $("#screen-text").html();        
         l = hist.length;
         lastChar =  hist.charAt(l-1);
+        console.log("hist length = "+ l,"lastChar= " + lastChar)
+        //tempAfterCE = 1;
        
         //reset after calculating a result
         if (hist.indexOf('=') != -1) {
@@ -96,6 +98,7 @@ $(document).ready(function ()
                     //if curr key is a number               
                     if ( !isNaN(curr)  )  
                     {
+                 
                         if (checkLimit(widthNum, widthText)) {
                             return limitReached();
                         }
@@ -111,7 +114,9 @@ $(document).ready(function ()
                         if (checkLimit(widthNum, widthText)) {
                             return limitReached();
                         }
-                        console.log(temp);                            
+                        temp = $("#screen-num").html();
+                        console.log('temp =' + temp); 
+                      
                         //if there is only one decimal
                         if (!findDecimal(temp)) 
                         {
@@ -132,7 +137,7 @@ $(document).ready(function ()
                 }
 
                 //if screen displays an operation and curr is a number  (|| handle case after CE is pressed)
-                if ( (isNaN(temp) && !isNaN(curr) && curr != ".") || (tempAfterCE == "0" && isNaN(lastChar) ) )
+                if ( (isNaN(temp) && !isNaN(curr) && curr != ".") || (tempAfterCE == "0" && isNaN(lastChar) && lastChar != "." ) )
                 {
                     hist = hist.concat(curr);       
                     displayNum(curr);
@@ -143,7 +148,7 @@ $(document).ready(function ()
 
             //when '=' is pressed (yay!)
             else 
-            {
+            {      
                 hist = $("#screen-text").html();
 
                 //so that = can't be pressed twice
@@ -151,37 +156,46 @@ $(document).ready(function ()
 
                     result = eval(hist);
                     result = result.toString();
-                    console.log(hist);
 
-                    //round infinitely repeating decimals and drop trailing zeros
+                    //round infinitely repeating decimals (like 0.33333333) and drop trailing zeros
                     if (result.indexOf('.') != -1) 
                     {
                         var decIndex = result.indexOf(".");
                         result = eval(result);
 
-                        result = result.toFixed(7-decIndex); 
-                        result = result.split("");
+                        result = result.toFixed(5-decIndex); 
+                        result = result.split("");                        
 
                         //drop trailing zeros
-                        for (var i = result.length - 1; i >= 1; i--) {
-                            if (result[i] == "0") {
+                        for (var i = result.length - 1; i >= 1; i--) 
+                        {
+                            if (result[i] == "0" && (result[i+1]== "0" || result[i+1] == null)) 
+                            {
+                                console.log("access");
                                 result.pop(i);                            
                             }
                         }
 
-                        result = result.join("");     
+                        result = result.join("");  
+                        
                     }
 
-                    //handle too long numbers that aren't decimals
-                    if (result.length > 7 && result.indexOf('.') == -1) 
+                 
+
+                    displayNum(result);
+                    hist = hist.concat("=" + result);
+                    displayText(hist);
+                  
+                   //handle too long numbers that aren't decimals
+                   //check for UI overflow
+                    widthNum = $("#screen-num").width();
+                    widthText = $('#screen-text').width();
+
+                    if (checkLimit(widthNum, widthText)) 
                     {
                         limitReached();
                         return;
                     }
-
-                    displayNum(result);
-                    hist = hist.concat("=" + result);
-                    displayText(hist);     
                 } 
             }
         }   
@@ -199,8 +213,8 @@ $(document).ready(function ()
             var n = hist.search(temp);            
 
            //prevent multiple CE presses
-           if (n != -1) 
-           {
+           if (n != -1) {
+
                //remove temp from display
                 hist = hist.slice(0, n); 
            }
